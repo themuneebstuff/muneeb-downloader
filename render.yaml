@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: muneeb-downloader
+    runtime: docker
+    plan: free
+    healthCheckPath: /login
+    envVars:
+      - key: DOWNLOADER_PASSWORD
+        generateValue: true
