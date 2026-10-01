@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Muneeb Downloader — link paste karo, video download karo.
+Muneeb Downloader — paste a link, download the video.
 - 1000+ sites (YouTube, TikTok, Instagram, Facebook, X, Dailymotion...)
-- Original quality, koi watermark nahi (source file direct download hoti hai)
+- Original quality, no watermark (the source file is downloaded directly)
 """
 import glob
 import os
@@ -48,7 +48,7 @@ def login():
             if request.is_json:
                 return jsonify({"ok": True})
             return redirect("/")
-        err = "Ghalat password."
+        err = "Wrong password."
     else:
         err = ""
     return render_template_string(LOGIN_PAGE, err=err)
@@ -75,7 +75,7 @@ QUALITY_MAP = {
     "1080":  ("1080p HD", "bv*[height<=1080]+ba/b[height<=1080]/b", None),
     "720":   ("720p HD", "bv*[height<=720]+ba/b[height<=720]/b", None),
     "480":   ("480p", "bv*[height<=480]+ba/b[height<=480]/b", None),
-    "audio": ("Sirf Audio (MP3)", "ba/b", "mp3"),
+    "audio": ("Audio Only (MP3)", "ba/b", "mp3"),
 }
 
 
@@ -96,7 +96,7 @@ def index():
 def api_info():
     url = (request.json or {}).get("url", "").strip()
     if not url.startswith("http"):
-        return jsonify({"ok": False, "error": "Sahi link paste karein (http/https)."}), 400
+        return jsonify({"ok": False, "error": "Please paste a valid link (http/https)."}), 400
     try:
         with yt_dlp.YoutubeDL(base_opts({"skip_download": True})) as ydl:
             info = ydl.extract_info(url, download=False)
@@ -108,7 +108,7 @@ def api_info():
             "site": info.get("extractor_key", ""),
         }})
     except Exception as e:
-        return jsonify({"ok": False, "error": f"Video info nahi mil saki: {e}"}), 400
+        return jsonify({"ok": False, "error": f"Could not fetch video info: {e}"}), 400
 
 
 def download_worker(job_id, url, quality):
@@ -140,13 +140,13 @@ def download_worker(job_id, url, quality):
         with yt_dlp.YoutubeDL(opts) as ydl:
             info = ydl.extract_info(url, download=True)
             title = info.get("title", "video")
-        # job_id prefix hata kar asal naam lagao
+        # strip the job_id prefix and restore the real filename
         ext = ".mp3" if audio_only else ""
         if not ext:
             matches = sorted(glob.glob(os.path.join(DL_DIR, job_id + ".*")),
                              key=os.path.getmtime)
             if not matches:
-                raise RuntimeError("Downloaded file nahi mili.")
+                raise RuntimeError("Downloaded file not found.")
             ext = os.path.splitext(matches[0])[1]
             src = matches[0]
         else:
@@ -165,7 +165,7 @@ def api_download():
     url = data.get("url", "").strip()
     quality = data.get("quality", "best")
     if not url.startswith("http"):
-        return jsonify({"ok": False, "error": "Sahi link paste karein."}), 400
+        return jsonify({"ok": False, "error": "Please paste a valid link."}), 400
     if quality not in QUALITY_MAP:
         quality = "best"
     job_id = uuid.uuid4().hex[:12]
@@ -196,7 +196,7 @@ def api_file(job_id):
 def api_cookies():
     f = request.files.get("file")
     if not f or not f.filename.endswith(".txt"):
-        return jsonify({"ok": False, "error": "cookies.txt file select karein."}), 400
+        return jsonify({"ok": False, "error": "Please select a cookies.txt file."}), 400
     f.save(COOKIE_FILE)
     return jsonify({"ok": True})
 
@@ -217,9 +217,9 @@ h2{margin:0 0 6px}p{color:#9aa0b0;font-size:14px}
 input{width:100%;background:#0f1115;border:1px solid #2c313d;border-radius:10px;color:#fff;padding:12px;font-size:15px;margin:12px 0}
 button{width:100%;background:#7c5cff;color:#fff;border:0;border-radius:10px;padding:12px;font-size:15px;cursor:pointer;font-weight:600}
 .err{color:#ff6b6b;font-size:14px;min-height:20px}</style></head>
-<body><div class="card"><h2>🔒 Muneeb Downloader</h2><p>Password likho:</p>
+<body><div class="card"><h2>🔒 Muneeb Downloader</h2><p>Enter the password:</p>
 <form method="post"><input type="password" name="pw" placeholder="Password" autofocus>
-<div class="err">{{ err }}</div><button type="submit">Kholo</button></form></div></body></html>"""
+<div class="err">{{ err }}</div><button type="submit">Open</button></form></div></body></html>"""
 
 PAGE = """<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
@@ -253,10 +253,10 @@ select{flex:1;background:#0f1115;border:1px solid #2c313d;border-radius:10px;col
 .note{margin-top:22px;font-size:12px;color:#6b7280;line-height:1.6}
 </style></head><body><div class="card">
 <h1><span>Muneeb</span> Downloader</h1>
-<div class="sub">Link paste karein — video original quality mein, bina watermark ke download karein.</div>
+<div class="sub">Paste a link — download videos in original quality, with no watermark.</div>
 <div class="row">
-<input id="url" type="text" placeholder="Video ka link yahan paste karein...">
-<button id="go" onclick="getInfo()">Dekho</button>
+<input id="url" type="text" placeholder="Paste a video link here...">
+<button id="go" onclick="getInfo()">Fetch</button>
 </div>
 <div id="info">
 <img id="thumb" src=""><h3 id="title"></h3><p id="meta"></p>
@@ -266,35 +266,35 @@ select{flex:1;background:#0f1115;border:1px solid #2c313d;border-radius:10px;col
 <option value="1080">1080p HD</option>
 <option value="720">720p HD</option>
 <option value="480">480p</option>
-<option value="audio">Sirf Audio (MP3)</option>
+<option value="audio">Audio Only (MP3)</option>
 </select>
 <button onclick="startDl()">Download</button>
 </div></div>
 <div id="prog"><div class="bar"><div id="fill"></div></div><div id="ptext"></div></div>
-<div id="done"><div>✅ Download complete!</div><a id="dlink" href="#">File Download Karein</a>
-<div style="margin-top:12px"><button class="ghost" onclick="location.reload()">Nayi Video</button></div></div>
+<div id="done"><div>✅ Download complete!</div><a id="dlink" href="#">Download File</a>
+<div style="margin-top:12px"><button class="ghost" onclick="location.reload()">New Video</button></div></div>
 <div class="err" id="err"></div>
-<div class="note">1000+ sites supported: YouTube, TikTok, Instagram, Facebook, X, Dailymotion aur bohat si.<br>
-Watermark is liye nahi aata kyunke original source file download hoti hai.</div>
+<div class="note">1000+ sites supported: YouTube, TikTok, Instagram, Facebook, X, Dailymotion and many more.<br>
+No watermark — the original source file is downloaded directly.</div>
 <details style="margin-top:14px;font-size:13px;color:#9aa0b0">
-<summary style="cursor:pointer;color:#c9cdd8">Login wali / bot-check wali videos? (cookies)</summary>
+<summary style="cursor:pointer;color:#c9cdd8">Login-only / bot-check videos? (cookies)</summary>
 <div style="margin-top:8px;line-height:1.7">
-Agar YouTube "sign in to confirm you're not a bot" kahe ya Instagram private video ho, to apne browser se cookies export karke yahan lagao:<br>
-1. Chrome mein <b>"Get cookies.txt LOCALLY"</b> extension install karo<br>
-2. youtube.com kholo (logged in), extension se <b>cookies.txt</b> export karo<br>
-3. Neeche file select karke <b>Cookies Lagao</b> dabao — ek dafa lagane ke baad sab downloads isi se honge.
+If YouTube says "sign in to confirm you're not a bot", or a video needs login, export cookies from your browser and apply them here:<br>
+1. Install the <b>"Get cookies.txt LOCALLY"</b> extension in Chrome<br>
+2. Open youtube.com (logged in) and export <b>cookies.txt</b> with the extension<br>
+3. Select the file below and press <b>Apply Cookies</b> — once applied, all downloads will use them.
 <div class="row" style="margin-top:8px">
 <input id="ck" type="file" accept=".txt" style="font-size:13px">
-<button onclick="upCk()" style="padding:10px 14px;font-size:13px">Cookies Lagao</button>
-<button class="ghost" onclick="delCk()" style="padding:10px 14px;font-size:13px">Hatao</button>
+<button onclick="upCk()" style="padding:10px 14px;font-size:13px">Apply Cookies</button>
+<button class="ghost" onclick="delCk()" style="padding:10px 14px;font-size:13px">Remove</button>
 </div><div id="ckmsg" style="margin-top:6px"></div></div></details>
 <script>
 async function upCk(){const f=document.getElementById('ck').files[0];if(!f)return;
  const fd=new FormData();fd.append('file',f);
  const r=await fetch('/api/cookies',{method:'POST',body:fd});const d=await r.json();
- document.getElementById('ckmsg').textContent=d.ok?'✅ Cookies lag gayi!':'❌ '+d.error;}
+ document.getElementById('ckmsg').textContent=d.ok?'✅ Cookies applied!':'❌ '+d.error;}
 async function delCk(){await fetch('/api/cookies',{method:'DELETE'});
- document.getElementById('ckmsg').textContent='Cookies hata di gayin.';}
+ document.getElementById('ckmsg').textContent='Cookies removed.';}
 </script>
 </div>
 <script>
@@ -318,7 +318,7 @@ async function startDl(){
 async function poll(){
  const r=await fetch('/api/progress/'+jobId);const d=await r.json();if(!d.ok)return;
  const j=d.job;document.getElementById('fill').style.width=j.percent+'%';
- document.getElementById('ptext').textContent=j.status==='processing'?'File taiyaar ho rahi hai...':(j.percent+'% • '+(j.speed||'')+' • '+(j.eta||''));
+ document.getElementById('ptext').textContent=j.status==='processing'?'Preparing file...':(j.percent+'% • '+(j.speed||'')+' • '+(j.eta||''));
  if(j.status==='done'){clearInterval(timer);document.getElementById('prog').style.display='none';
   document.getElementById('done').style.display='block';document.getElementById('dlink').href='/api/file/'+jobId;}
  if(j.status==='error'){clearInterval(timer);const e=document.getElementById('err');e.textContent='Error: '+j.error;e.style.display='block';}}
@@ -326,7 +326,7 @@ async function poll(){
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5050))
-    print(f"Muneeb Downloader chal raha hai: http://localhost:{port}")
+    print(f"Muneeb Downloader running at: http://localhost:{port}")
     if APP_PASSWORD:
-        print("Password protection ON hai.")
+        print("Password protection is ON.")
     app.run(host="0.0.0.0", port=port)
