@@ -1,80 +1,96 @@
 # Muneeb Downloader
 
-Link paste karo — video **original quality** mein, **bina watermark** ke download karo.
-YouTube, TikTok, Instagram, Facebook, X, Dailymotion aur 1000+ sites supported.
+Paste a link — download videos in **original quality**, with **no watermark**.
+YouTube, TikTok, Instagram, Facebook, X, Dailymotion and 1000+ sites supported (via yt-dlp).
 
-## Apne computer par kaise chalana hai (sirf pehli dafa)
+## Run on your own computer (first time only)
 
 **Windows:**
-1. [python.org](https://www.python.org/downloads/) se Python install karo (install ke waqt **"Add python.exe to PATH"** tick zaroor karna).
-2. [ffmpeg.org](https://www.ffmpeg.org/download.html) se ffmpeg install karo (best quality + MP3 ke liye zaroori hai).
-3. Is zip ko extract karo, phir **start.bat** par double-click karo.
-4. Browser mein khud khul jayega: `http://localhost:5050` — agar na khule to khud ye address likh kar kholo.
+1. Install Python from [python.org](https://www.python.org/downloads/) (during install, make sure **"Add python.exe to PATH"** is ticked).
+2. Install ffmpeg from [ffmpeg.org](https://www.ffmpeg.org/download.html) (required for best quality + MP3).
+3. Extract the zip, then double-click **start.bat**.
+4. It opens in your browser at `http://localhost:5050` — if not, open that address yourself.
 
 **Mac/Linux:**
-1. Python 3 aur ffmpeg install karo.
-2. Zip extract karke terminal mein: `bash start.sh`
-3. Browser mein kholo: `http://localhost:5050`
+1. Install Python 3 and ffmpeg.
+2. Extract the zip and run in a terminal: `bash start.sh`
+3. Open in your browser: `http://localhost:5050`
 
-> Pehli dafa start hone mein 1-2 minute lag sakte hain (setup hota hai). Uske baad bas file chalao aur use karo.
+> First launch can take 1–2 minutes (one-time setup). After that, just run the file and use it.
 
-## Kaise use karna hai
+## How to use
 
-1. Video ka link copy karke box mein paste karo, **Dekho** dabao.
-2. Video ki photo, naam aur duration nazar aayegi.
-3. Quality select karo (**Best / Original quality** = jaisi upload hui thi waisi).
-4. **Download** dabao — neeche progress nazar aayegi.
-5. Complete hote hi **File Download Karein** ka button aayega.
+1. Copy a video link, paste it in the box, press **Fetch**.
+2. You'll see the thumbnail, title and duration.
+3. Pick a quality (**Best / Original quality** = as it was uploaded).
+4. Press **Download** — progress shows below.
+5. When complete, the **Download File** button appears.
 
-Download ki hui files `downloads` folder mein save hoti hain.
+Downloaded files are saved in the `downloads` folder.
 
-## Agar koi video download na ho (bot-check / login)
+## If a video won't download (bot-check / login)
 
-Kuch sites (khaas taur par YouTube) kabhi "confirm you're not a bot" kehti hain. Iska hal:
+Some sites (especially YouTube) sometimes say "confirm you're not a bot". Fix:
 
-1. Chrome mein **"Get cookies.txt LOCALLY"** extension install karo.
-2. youtube.com kholo (apne account se logged in raho).
-3. Extension se **cookies.txt** export karo.
-4. Downloader page par neeche "Login wali / bot-check wali videos?" wala section kholo, file select karke **Cookies Lagao** dabao.
-5. Ek dafa lagane ke baad sab downloads theek honge.
+1. Install the **"Get cookies.txt LOCALLY"** extension in Chrome.
+2. Open youtube.com (stay logged in to your account).
+3. Export **cookies.txt** with the extension.
+4. In the downloader page, open the "Login-only / bot-check videos? (cookies)" section, select the file and press **Apply Cookies**.
+5. Once applied, all downloads will work.
 
-## Zaroori baatein
+## Good to know
 
-- Watermark is liye nahi aata kyunke original source file download hoti hai — koi dobara encoding nahi hoti.
-- **Best / Original quality** select karne par wohi quality milegi jo upload hui thi.
-- Sirf wohi videos download karo jinka tumhe haq hai (apni videos, copyright-free ya ijazat wali). Dosron ka content bina ijazat download/re-upload karna unki terms ke khilaf ho sakta hai.
-- Private ya login-only videos ke liye cookies lagana zaroori ho sakta hai.
-
+- No watermark, because the original source file is downloaded directly — nothing is re-encoded.
+- **Best / Original quality** gives you exactly the quality that was uploaded.
+- Only download videos you have the right to (your own, copyright-free, or permitted). Downloading/re-uploading others' content without permission may violate their terms.
+- Cookies may be required for private or login-only videos.
 
 ---
 
-## Internet par ONLINE chalana (kahin se bhi use karo)
+## Run it ONLINE (use from anywhere, e.g. your phone)
 
-Agar tum chahte ho ke tool sirf ghar ke computer par nahi, balkay **phone se kahin se bhi** khul jaye, to Cloudflare Tunnel use karo. Ye **bilkul free** hai aur koi port-forwarding ya static IP nahi chahiye.
+If you want the tool reachable not just on your home computer but **from anywhere via your phone**, use Cloudflare Tunnel. It's **completely free** and needs no port-forwarding or static IP.
 
-**Faida:** Link tumhare apne computer se banegi, is liye YouTube/TikTok ka bot-check bhi nahi aayega (server companies ke IPs par aksar block lagta hai).
+**Bonus:** the link is served from your own computer, so YouTube/TikTok bot-checks usually don't trigger (server company IPs are the ones that get blocked).
 
-### Tareeqa (ek dafa setup)
+### Setup (one time)
 
-1. Is page se apne system ke hisab se **cloudflared** download karo:
+1. Download **cloudflared** for your system from:
    https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
-2. Download ki hui file ka naam badal kar rakho:
+2. Rename the downloaded file:
    - Windows: `cloudflared.exe`
-   - Mac/Linux: `cloudflared` (phir `chmod +x cloudflared` chalao)
-3. Us file ko isi folder mein rakho (jahan `tunnel.bat` / `tunnel.sh` hai).
+   - Mac/Linux: `cloudflared` (then run `chmod +x cloudflared`)
+3. Put it in this folder (next to `tunnel.bat` / `tunnel.sh`).
 
-### Chalana
+### Run
 
-- **Windows:** `tunnel.bat` par double-click karo.
-- **Mac/Linux:** terminal mein `bash tunnel.sh` chalao.
+- **Windows:** double-click `tunnel.bat`.
+- **Mac/Linux:** in a terminal run `bash tunnel.sh`.
 
-Kuch second mein ek **password** screen par nazar aayega (us ko note kar lo) aur us ke neeche ek link aayegi jo `trycloudflare.com` par khatam hogi — **yehi tumhari public link hai**. Usay phone ke browser mein kholo, password likho, bas!
+After a few seconds a **password** appears on screen (note it down) and below it a link ending in `trycloudflare.com` — **that's your public link**. Open it in your phone's browser, enter the password, done!
 
-**Yaad rakho:**
-- Jab tak ye window khuli hai, link kaam karegi. Band karne ke liye window close kar do (ya Ctrl+C).
-- Har dafa naya password aur nayi link banti hai — purani link dobara kaam nahi karegi.
-- Computer on aur internet se connected rehna chahiye jab use karna ho.
+**Remember:**
+- The link works while this window stays open. To stop, close the window (or Ctrl+C).
+- Every run creates a new password and a new link — old links stop working.
+- Your computer must stay on and connected while you use it.
 
-### 24/7 online chahiye (computer band ho tab bhi)?
+### Want 24/7 online (even with your computer off)?
 
-Us ke liye VPS lena parega (jaise Contabo/Hetzner, taqreeban $5/month). Us par `requirements.txt` se install karke `DOWNLOADER_PASSWORD` set karke app chalao. Ek baat zehan mein rakho: VPS ke IP par YouTube aksar bot-check lagata hai, to YouTube ke liye cookies lagana par sakti hain.
+You need a VPS (e.g. Contabo/Hetzner, ~$5/month). Install from `requirements.txt`, set `DOWNLOADER_PASSWORD`, and run the app. One caveat: YouTube often bot-checks VPS IPs, so you may need to apply cookies for YouTube.
+
+---
+
+## Deploy online (free hosting)
+
+### Render (Docker)
+
+This repo includes a `Dockerfile` and `render.yaml`. Create a Blueprint from this repo on Render (free plan) — it sets a generated `DOWNLOADER_PASSWORD` automatically. Note: Render requires card verification even for the free tier (temporary $1 authorization, no charge).
+
+### Hugging Face Spaces (Docker, no card required)
+
+1. Create a new Space with the **Docker** SDK.
+2. Upload `app.py`, `requirements.txt`, `Dockerfile` and a Space `README.md` (with `sdk: docker` frontmatter).
+3. In Space **Settings → Variables and secrets**, add a secret named `DOWNLOADER_PASSWORD`.
+4. The Space builds and gives you a public URL like `https://<user>-muneeb-downloader.hf.space`.
+
+Note: free hosting tiers may sleep after inactivity (first visit wakes them up), and datacenter IPs can trigger YouTube bot-checks — use the in-app cookies feature if that happens.
